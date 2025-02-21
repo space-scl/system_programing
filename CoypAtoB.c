@@ -14,13 +14,14 @@ int main (int argc, char* argv[])
     ssize_t   readSize;
     ssize_t   writeSize;
 
+    // open a.c for reading and file offset is set to the beginning of the file
     fdA = open("a.c", O_RDONLY);
     if (fdA == -1) {
         return -1;
     }
 
     // the file offset is set to the end of the file prior to write
-    fdB = open("b.c", O_RDWR | O_APPEND);
+    fdB = open("b.c", O_RDWR | O_APPEND | O_CREAT, 0666);
     if (fdB == -1) {
         return -1;
     }
