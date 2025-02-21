@@ -3,13 +3,15 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+// Read/Write 1024 bytes most at once and do not exceed 1024 repetitions
 #define   READ_WRITE_UNIT_SIZE 1024
+#define   MAX_RDWR_REPETITION  1024
 
 int main (int argc, char* argv[])
 {
     int fdA;
     int fdB;
-    int i;
+    int i = 0;;
     char buf[READ_WRITE_UNIT_SIZE];
     ssize_t   readSize;
     ssize_t   writeSize;
@@ -40,6 +42,10 @@ int main (int argc, char* argv[])
         writeSize = write (fdB, buf, readSize);
         if (writeSize == -1) {
             return -1;
+        }
+
+        if (++i > MAX_RDWR_REPETITION) {
+            break;
         }
     }
 
