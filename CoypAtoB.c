@@ -19,7 +19,8 @@ int main (int argc, char* argv[])
         return -1;
     }
 
-    fdB = open("b.c", O_RDWR);
+    // the file offset is set to the end of the file prior to write
+    fdB = open("b.c", O_RDWR | O_APPEND);
     if (fdB == -1) {
         return -1;
     }
