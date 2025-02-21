@@ -25,6 +25,7 @@ int main (int argc, char* argv[])
     // the file offset is set to the end of the file prior to write
     fdB = open("b.c", O_RDWR | O_APPEND | O_CREAT, 0666);
     if (fdB == -1) {
+        close(fdA);
         return -1;
     }
 
@@ -32,7 +33,7 @@ int main (int argc, char* argv[])
         // read from a.c
         readSize = read(fdA, buf, READ_WRITE_UNIT_SIZE);
         if (readSize == -1) {
-            return -1;
+            break;
         }
         // If readSize is 0, it means we have reached the end of the file
         if (readSize == 0) {
@@ -41,13 +42,16 @@ int main (int argc, char* argv[])
         // write to b.c
         writeSize = write (fdB, buf, readSize);
         if (writeSize == -1) {
-            return -1;
+            break;
         }
 
         if (++i > MAX_RDWR_REPETITION) {
             break;
         }
     }
+
+    close(fdA);
+    close(fdB);
 
     return 0;
 }
