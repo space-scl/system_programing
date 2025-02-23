@@ -3,11 +3,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-// Read/Write 1024 bytes most at once and do not exceed 1024 repetitions
-#define   READ_WRITE_UNIT_SIZE 1024
-#define   MAX_RDWR_REPETITION  1024
+#include <stdio.h>
+#include "learning.h"
 
-int main (int argc, char* argv[])
+int copyAtoB(char* Afile, char* Bfile)
 {
     int fdA;
     int fdB;
@@ -17,13 +16,13 @@ int main (int argc, char* argv[])
     ssize_t   writeSize;
 
     // open a.c for reading and file offset is set to the beginning of the file
-    fdA = open("a.c", O_RDONLY);
+    fdA = open(Afile, O_RDONLY);
     if (fdA == -1) {
         return -1;
     }
 
     // the file offset is set to the end of the file prior to write
-    fdB = open("b.c", O_RDWR | O_APPEND | O_CREAT, 0666);
+    fdB = open(Bfile, O_RDWR | O_APPEND | O_CREAT, 0666);
     if (fdB == -1) {
         close(fdA);
         return -1;
@@ -55,6 +54,3 @@ int main (int argc, char* argv[])
 
     return 0;
 }
-
-
-

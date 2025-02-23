@@ -2,6 +2,6 @@
 .PHONY: copy
 
 copy:
-	gcc CopyAtoB.c
+	gcc main.c copyAtoB.c
 
 
