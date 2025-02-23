@@ -18,7 +18,7 @@ int copyFile(char* Afile, char* Bfile)
     ssize_t   writeSize;
 
     if (Bfile[strlen(Bfile) - 1] == '.') {
-        return 0;
+        return -1;
     }
 
     // open a.c for reading and file offset is set to the beginning of the file
@@ -63,9 +63,15 @@ int copyFile(char* Afile, char* Bfile)
 
 char* concatenateStr (char* buff, char* str1, char* str2)
 {
+    int len = strlen(str1);
     memcpy(buff, str1, strlen(str1));
 
-    memcpy(buff + strlen(str1), str2, strlen(str2) + 1);
+    if (str1[strlen(str1) - 1] != '/') {
+        buff[strlen(str1)] = '/';
+        len += 1;
+    }
+
+    memcpy(buff + len, str2, strlen(str2) + 1);
 
     return buff;
 }
@@ -100,9 +106,13 @@ int copyDir (char* pathA, char* pathB)
             return -1;
         }
 
-        printf("file name: %s\n", dirEnt->d_name);
-        status = copyFile(concatenateStr (srcDir, pathA, dirEnt->d_name),
-                          concatenateStr (destDir,  pathB, dirEnt->d_name));
+        concatenateStr (srcDir, pathA, dirEnt->d_name);
+        concatenateStr (destDir, pathB, dirEnt->d_name);
+        status = copyFile(srcDir, destDir);
+        if (status == -1) {
+            continue;
+        }
+        printf(" %s --> %s\n", srcDir, destDir);
 
         if (status != 0) {
             printf("Fail to copy file\n");
