@@ -7,6 +7,8 @@
 #define   READ_WRITE_UNIT_SIZE 1024
 #define   MAX_RDWR_REPETITION  1024
 
-int copyAtoB(char* Afile, char* Bfile);
+int copyFile(char* Afile, char* Bfile);
+
+int copyDir (char* pathA, char* pathB);
 
 #endif

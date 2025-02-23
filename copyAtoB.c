@@ -2,11 +2,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <dirent.h>
 
 #include <stdio.h>
+#include <string.h>
 #include "learning.h"
 
-int copyAtoB(char* Afile, char* Bfile)
+int copyFile(char* Afile, char* Bfile)
 {
     int fdA;
     int fdB;
@@ -14,6 +16,10 @@ int copyAtoB(char* Afile, char* Bfile)
     char buf[READ_WRITE_UNIT_SIZE];
     ssize_t   readSize;
     ssize_t   writeSize;
+
+    if (Bfile[strlen(Bfile) - 1] == '.') {
+        return 0;
+    }
 
     // open a.c for reading and file offset is set to the beginning of the file
     fdA = open(Afile, O_RDONLY);
@@ -54,3 +60,59 @@ int copyAtoB(char* Afile, char* Bfile)
 
     return 0;
 }
+
+char* concatenateStr (char* buff, char* str1, char* str2)
+{
+    memcpy(buff, str1, strlen(str1));
+
+    memcpy(buff + strlen(str1), str2, strlen(str2) + 1);
+
+    return buff;
+}
+
+int copyDir (char* pathA, char* pathB)
+{
+    DIR* dirP;
+    struct dirent* dirEnt;
+    char srcDir[100];
+    char destDir[100];
+    int status;
+
+    dirP = opendir(pathA);
+
+    if (dirP == NULL) {
+        return -1;
+    }
+
+    if (opendir(pathB) == NULL) {
+        if (mkdir(pathB, 0777) == -1) {
+            printf("Fail to create directory %s\n", pathB);
+            closedir(dirP);
+            return -1;
+        }
+    }
+
+    while (1) {
+        dirEnt = readdir(dirP);
+
+        if (dirEnt == NULL) {
+            closedir (dirP);
+            return -1;
+        }
+
+        printf("file name: %s\n", dirEnt->d_name);
+        status = copyFile(concatenateStr (srcDir, pathA, dirEnt->d_name),
+                          concatenateStr (destDir,  pathB, dirEnt->d_name));
+
+        if (status != 0) {
+            printf("Fail to copy file\n");
+            closedir(dirP);
+            return -1;
+        }
+
+    }
+
+    return 0;
+}
+
+
